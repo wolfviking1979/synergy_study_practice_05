@@ -1,0 +1,45 @@
+@startuml
+' Диаграмма развертывания BudgetTracker
+
+node "Пользовательский компьютер" as PC {
+    artifact "BudgetTracker.exe" as App
+    artifact "budget_data.json" as DataFile
+    artifact "Console" as Console
+    artifact "CSV Export" as Export
+}
+
+node "Внешнее хранилище" as External {
+    artifact "Backup" as Backup
+    artifact "Cloud Storage" as Cloud
+}
+
+App --> DataFile : Чтение/Запись
+App --> Console : Вывод/Ввод
+App --> Export : Создание
+Export --> External : Экспорт CSV
+
+App ..> Backup : Резервное копирование
+DataFile ..> Cloud : Синхронизация
+
+note right of App
+  Приложение работает локально
+  .NET 8.0 консольное приложение
+end note
+
+note right of DataFile
+  Хранит все финансовые записи
+  в формате JSON
+  Расположен в корне проекта
+end note
+
+note right of Export
+  Экспорт в формат CSV
+  для Excel и других программ
+end note
+
+note right of Cloud
+  Опционально:
+  Резервное копирование
+  в облачное хранилище
+end note
+@enduml

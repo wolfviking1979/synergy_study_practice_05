@@ -1,0 +1,55 @@
+@startuml
+' Диаграмма прецедентов BudgetTracker
+
+left to right direction
+actor "Пользователь" as User
+
+rectangle "Бюджетный Трекер" {
+    usecase "Добавить запись" as UC1
+    usecase "Просмотреть все записи" as UC2
+    usecase "Просмотреть отчет" as UC3
+    usecase "Просмотреть статистику" as UC4
+    usecase "Удалить запись" as UC5
+    usecase "Редактировать запись" as UC6
+    usecase "Поиск по категории" as UC7
+    usecase "Фильтр по типу" as UC8
+    usecase "Экспорт в CSV" as UC9
+    usecase "Показать путь к файлу" as UC10
+    usecase "Сохранить данные" as UC11
+    usecase "Загрузить данные" as UC12
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC12
+
+UC1 ..> UC11 : <<include>>
+UC2 ..> UC12 : <<include>>
+UC3 ..> UC12 : <<include>>
+UC4 ..> UC12 : <<include>>
+UC11 ..> UC12 : <<include>>
+
+note right of UC1
+  Создание новой записи
+  с валидацией ввода
+end note
+
+note right of UC3
+  Отчет за 30 дней с
+  группировкой по категориям
+end note
+
+note right of UC9
+  Экспорт в CSV файл
+  для дальнейшего анализа
+end note
+@enduml

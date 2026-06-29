@@ -1,0 +1,86 @@
+@startuml
+' Диаграмма последовательности - Добавление записи
+
+actor "Пользователь" as User
+participant "Program" as Main
+participant "UiModule" as UI
+participant "StorageModule" as Storage
+participant "BusinessLogicModule" as Logic
+
+User -> Main: 1. Запуск программы
+activate Main
+
+Main -> Storage: 2. Load()
+activate Storage
+Storage --> Main: 3. Возвращает список записей
+deactivate Storage
+
+loop until exit
+    Main -> UI: 4. ShowMenu()
+    activate UI
+    UI --> User: 5. Показывает меню
+    deactivate UI
+    
+    alt Добавление записи
+        User -> Main: 6. Выбирает "1"
+        Main -> UI: 7. ReadRecordFromUser()
+        activate UI
+        
+        UI -> UI: 8. Валидация ввода
+        UI --> User: 9. Запрос данных
+        User --> UI: 10. Вводит данные
+        UI -> UI: 11. Создает FinanceRecord
+        UI --> Main: 12. Возвращает запись
+        deactivate UI
+        
+        Main -> Main: 13. Добавляет в список
+        Main -> Storage: 14. Save(records)
+        activate Storage
+        Storage -> Storage: 15. Сериализация в JSON
+        Storage --> Main: 16. Подтверждение
+        deactivate Storage
+        
+        Main -> UI: 17. Сообщение об успехе
+        activate UI
+        UI --> User: 18. ✅ Запись добавлена
+        deactivate UI
+        
+    else Просмотр отчета
+        User -> Main: 19. Выбирает "3"
+        Main -> Logic: 20. GetBalance(records)
+        activate Logic
+        Logic --> Main: 21. Баланс
+        deactivate Logic
+        
+        Main -> Logic: 22. GetTotalByType(records, "Income")
+        activate Logic
+        Logic --> Main: 23. Доходы
+        deactivate Logic
+        
+        Main -> Logic: 24. GetTotalByType(records, "Expense")
+        activate Logic
+        Logic --> Main: 25. Расходы
+        deactivate Logic
+        
+        Main -> Logic: 26. GetExpensesByCategory(records)
+        activate Logic
+        Logic --> Main: 27. Категории
+        deactivate Logic
+        
+        Main -> UI: 28. DisplayReport(...)
+        activate UI
+        UI --> User: 29. 📊 Отчет
+        deactivate UI
+        
+    else Выход
+        User -> Main: 30. Выбирает "0"
+        Main -> Storage: 31. Save(records)
+        activate Storage
+        Storage --> Main: 32. Сохранено
+        deactivate Storage
+        
+        Main --> User: 33. 💾 До свидания!
+        deactivate Main
+    end
+end
+@enduml

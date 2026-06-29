@@ -1,0 +1,40 @@
+@startuml
+' Диаграмма компонентов BudgetTracker
+
+package "BudgetTracker" {
+    [Program] as Main
+    [StorageModule] as Storage
+    [BusinessLogicModule] as Logic
+    [UiModule] as UI
+    [JSON File] as JSON
+    [Console] as Console
+}
+
+Main --> Storage : Load() / Save()
+Main --> Logic : GetBalance() / GetStatistics()
+Main --> UI : ShowMenu()
+
+Storage ..> JSON : read/write
+UI ..> Console : output/input
+Logic ..> Storage : processes data
+
+note right of Storage
+  Хранит данные в JSON
+  формате в корне проекта
+end note
+
+note right of Logic
+  Содержит всю бизнес-логику:
+  расчеты, фильтры, статистику
+end note
+
+note right of UI
+  Взаимодействие с пользователем
+  через консоль
+end note
+
+note right of Main
+  Точка входа в приложение
+  Управляет главным циклом
+end note
+@enduml

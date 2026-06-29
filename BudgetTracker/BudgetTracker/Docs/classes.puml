@@ -1,5 +1,6 @@
 @startuml
-' classes.puml
+' Диаграмма классов BudgetTracker
+
 class FinanceRecord {
     - Guid Id
     - string Type
@@ -23,6 +24,9 @@ class BusinessLogicModule {
     + GetBalance(records) : decimal
     + GetTotalByType(records, type, days) : decimal
     + GetExpensesByCategory(records, days) : Dictionary<string, decimal>
+    + GetStatistics(records) : (decimal, decimal, decimal, decimal)
+    + FilterByCategory(records, category) : List<FinanceRecord>
+    + FilterByType(records, type) : List<FinanceRecord>
 }
 
 class UiModule {
@@ -30,6 +34,10 @@ class UiModule {
     + ReadRecordFromUser() : FinanceRecord
     + DisplayRecords(records)
     + DisplayReport(balance, income, expense, categories)
+    + DisplayStatistics(records)
+    + SelectRecordForAction(records, action) : int
+    + ShowFilePath(filePath)
+    + ExportToCsv(records)
 }
 
 class Program {
@@ -39,7 +47,35 @@ class Program {
 Program --> StorageModule
 Program --> BusinessLogicModule
 Program --> UiModule
-StorageModule ..> FinanceRecord
-BusinessLogicModule ..> FinanceRecord
-UiModule ..> FinanceRecord
+
+StorageModule ..> FinanceRecord : использует
+BusinessLogicModule ..> FinanceRecord : использует
+UiModule ..> FinanceRecord : использует
+
+note top of FinanceRecord
+  Модель данных
+  Представляет одну
+  финансовую запись
+end note
+
+note top of StorageModule
+  Отвечает за:
+  - Чтение из JSON
+  - Запись в JSON
+  - Определение пути
+end note
+
+note top of BusinessLogicModule
+  Отвечает за:
+  - Расчет баланса
+  - Фильтрацию
+  - Статистику
+end note
+
+note top of UiModule
+  Отвечает за:
+  - Ввод данных
+  - Вывод данных
+  - Валидацию
+end note
 @enduml
