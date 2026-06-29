@@ -1,0 +1,45 @@
+@startuml
+' classes.puml
+class FinanceRecord {
+    - Guid Id
+    - string Type
+    - decimal Amount
+    - DateTime Date
+    - string Category
+    - string Description
+    + ToString() : string
+}
+
+class StorageModule {
+    - string _filePath
+    - JsonSerializerOptions _options
+    + StorageModule(fileName)
+    + Load() : List<FinanceRecord>
+    + Save(records)
+    + GetFilePath() : string
+}
+
+class BusinessLogicModule {
+    + GetBalance(records) : decimal
+    + GetTotalByType(records, type, days) : decimal
+    + GetExpensesByCategory(records, days) : Dictionary<string, decimal>
+}
+
+class UiModule {
+    + ShowMenu()
+    + ReadRecordFromUser() : FinanceRecord
+    + DisplayRecords(records)
+    + DisplayReport(balance, income, expense, categories)
+}
+
+class Program {
+    + Main()
+}
+
+Program --> StorageModule
+Program --> BusinessLogicModule
+Program --> UiModule
+StorageModule ..> FinanceRecord
+BusinessLogicModule ..> FinanceRecord
+UiModule ..> FinanceRecord
+@enduml

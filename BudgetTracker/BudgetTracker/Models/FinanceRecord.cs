@@ -1,3 +1,5 @@
+using System;
+
 namespace BudgetTracker.Models;
 
 public class FinanceRecord

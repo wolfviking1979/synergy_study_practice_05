@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using BudgetTracker.Models;
 
@@ -12,39 +15,34 @@ public class StorageModule
     {
         // Определяем корень проекта
         string projectRoot = GetProjectRoot();
-        
-        // Полный путь к файлу в корне проекта
         _filePath = Path.Combine(projectRoot, fileName);
         
         Console.WriteLine($"[INFO] Корень проекта: {projectRoot}");
         Console.WriteLine($"[INFO] Файл данных: {_filePath}");
     }
 
-    /// <summary>
-    /// Определяет корневую папку проекта
-    /// </summary>
     private string GetProjectRoot()
     {
-        // Начинаем с текущей директории
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-        
-        // Ищем файл .csproj, поднимаясь вверх по папкам
         string? directory = currentDir;
+        
         while (directory != null)
         {
-            // Проверяем, есть ли в этой папке файл .csproj
-            var csprojFiles = Directory.GetFiles(directory, "*.csproj");
-            if (csprojFiles.Length > 0)
+            try
             {
-                // Нашли корень проекта
-                return directory;
+                var csprojFiles = Directory.GetFiles(directory, "*.csproj");
+                if (csprojFiles.Length > 0)
+                {
+                    return directory;
+                }
+                directory = Directory.GetParent(directory)?.FullName;
             }
-            
-            // Поднимаемся на уровень выше
-            directory = Directory.GetParent(directory)?.FullName;
+            catch
+            {
+                directory = Directory.GetParent(directory)?.FullName;
+            }
         }
         
-        // Если .csproj не найден, используем текущую папку
         return currentDir;
     }
 
@@ -52,7 +50,7 @@ public class StorageModule
     {
         if (!File.Exists(_filePath))
         {
-            Console.WriteLine($"[INFO] Файл не найден. Будет создан новый: {_filePath}");
+            Console.WriteLine($"[INFO] Файл не найден. Будет создан новый");
             return new List<FinanceRecord>();
         }
 
@@ -60,7 +58,7 @@ public class StorageModule
         {
             var json = File.ReadAllText(_filePath);
             var records = JsonSerializer.Deserialize<List<FinanceRecord>>(json) ?? new List<FinanceRecord>();
-            Console.WriteLine($"[INFO] Загружено {records.Count} записей из файла");
+            Console.WriteLine($"[INFO] Загружено {records.Count} записей");
             return records;
         }
         catch (JsonException ex)
@@ -84,7 +82,6 @@ public class StorageModule
             Console.WriteLine($"[ERROR] Ошибка сохранения: {ex.Message}");
         }
     }
-    
-    // Вспомогательный метод для получения пути к файлу
+
     public string GetFilePath() => _filePath;
 }
